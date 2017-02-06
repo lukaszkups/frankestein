@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="16" height="16" tilewidth="50" tileheight="50">
+ <tileset firstgid="1" name="tiles" tilewidth="50" tileheight="50">
+  <image source="../img/tiles.png" width="150" height="600"/>
+ </tileset>
+ <layer name="ground" width="16" height="16">
+  <data encoding="base64" compression="zlib">
+   eJzjYGBg4MCCYQCbHC61pAJy9XOi6efEgtHVootT035yAan6B5v7YWaQai8+/djiD10fNvdjM5sQwOZ/UswZLPZTkn8BGRsCdw==
+  </data>
+ </layer>
+ <layer name="traps" width="16" height="16">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUDCYghcSWhPKx0dQAAElgAM0=
+  </data>
+ </layer>
+ <objectgroup name="kill" width="16" height="16">
+  <object name="spikes" type="spikes" x="400" y="729" width="350" height="20"/>
+  <object x="458" y="729" height="1"/>
+  <object name="spikes" type="spikes" x="250" y="728" width="50" height="20"/>
+ </objectgroup>
+</map>

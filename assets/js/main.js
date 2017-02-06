@@ -1,20 +1,21 @@
-var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+var game = new Phaser.Game(800, 800, Phaser.CANVAS, '', { preload: preload, create: create, update: update });
 var platforms;
 var playerMovingLeft = false;
 var map;
 var layer
 var player;
 var traps;
-var trapMap; 
+var trapMap;
+var spikes;
 
 function preload(){
   // load game sprite image, 5 x 5px each frame, 33 frames in total
   game.load.spritesheet('tile', 'assets/img/tiles.png', 50, 50, 32);
-  game.load.spritesheet('hero', 'assets/img/hero.png', 40, 50, 5);
+  game.load.spritesheet('hero', 'assets/img/hero.png', 40, 50, 6);
   // turn scale filter to nearest neighbour
   //game.stage.smoothed = false;
   // load tiled level
-  game.load.tilemap('lvl', 'assets/map/map.json', null, Phaser.Tilemap.TILED_JSON);
+  game.load.tilemap('lvl', 'assets/map/map2.json', null, Phaser.Tilemap.TILED_JSON);
   game.load.image('lvlTiles', 'assets/img/tiles.png');
 }
 
@@ -45,8 +46,8 @@ function create() {
 
   map = game.add.tilemap('lvl');
   map.addTilesetImage('tiles', 'lvlTiles');
-  layer = map.createLayer('layer1');
-  map.setCollisionBetween(1, 400, true, 'layer1');
+  layer = map.createLayer('ground');
+  map.setCollisionBetween(1, 400, true, 'ground');
   
 
   // The player and its settings
@@ -55,8 +56,8 @@ function create() {
   game.physics.arcade.enable(player);
 
   //  Player physics properties. Give the little guy a slight bounce.
-  player.body.bounce.y = 0.2;
-  player.body.gravity.y = 500;
+  player.body.bounce.y = 0.1;
+  player.body.gravity.y = 700;
   //player.body.collideWorldBounds = true;
 
   //  Our two animations, walking left and right.
@@ -68,15 +69,20 @@ function create() {
 
   trapMap = game.add.tilemap('lvl');
   trapMap.addTilesetImage('tiles', 'lvlTiles');
-  traps = trapMap.createLayer('enemies');
- console.log(player.body.height); 
+  traps = trapMap.createLayer('traps');
+  
+
+  spikes = game.add.group();
+  spikes.enableBody = true;
+  //map.createFromObjects('kill', null, 'spikes', 0, true, false, spikes);
+  console.log(map.objects);
 }
 
 function update() {
   //  Collide the player and the stars with the platforms
   var hitPlatform = game.physics.arcade.collide(player, layer);
-  var overlapTrap = game.physics.arcade.collide(player, traps);
-    
+  var overlapTrap = game.physics.arcade.overlap(player, spikes);
+
   //  Reset the players velocity (movement)
   player.body.velocity.x = 0;
   
@@ -86,13 +92,13 @@ function update() {
   if(cursors.left.isDown){
     playerMovingLeft = true;
     //  Move to the left
-    player.body.velocity.x = -150;
+    player.body.velocity.x = -200;
 
     player.animations.play('left');
   }else if(cursors.right.isDown){
     playerMovingLeft = false;
     //  Move to the right
-    player.body.velocity.x = 150;
+    player.body.velocity.x = 200;
 
     player.animations.play('right');
   }else{
@@ -107,15 +113,15 @@ function update() {
 
   //  Allow the player to jump if they are touching the ground.
   if(cursors.up.isDown && player.body.blocked.down && hitPlatform){
-    player.body.velocity.y = -250;
+    player.body.velocity.y = -400;
   }
 
   // rewarp!
-  if(player.y > 600){
+  if(player.y > 800){
     player.y = -50;
   }
   
-  if(player.body.velocity.y > 500){
-    player.body.velocity.y = 500;
+  if(player.body.velocity.y > 700){
+    player.body.velocity.y = 700;
   } 
 }
