@@ -89,11 +89,17 @@ function takingDamage(enemyGroup){
   if(overlapsEnemy){
     if(damageOverlap < 120){
       damageOverlap++;
-    player.animations.play('blinkRight');
+      if(game.time.elapsed % 3 < 2){
+        player.alpha = 1;
+      }else{
+        player.alpha = 0;
+      }
     }else{
       damageOverlap = 0;
       respawnPlayer();
     }
+  }else{
+    player.alpha = 1;
   } 
 }
 
