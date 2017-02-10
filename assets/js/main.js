@@ -7,8 +7,9 @@ var player;
 var traps;
 var trapMap;
 var spikes;
-var damageOverlap = 0; 
+var playerIsTakingDamage = false; 
 var playerHealth = 3;
+var damageTime;
 
 function preload(){
   // load game sprite image, 5 x 5px each frame, 33 frames in total
@@ -74,6 +75,8 @@ function setupPlayer(){
   player.animations.add('left', [0, 1, 0, 2], 10, true);
   player.animations.add('right', [3, 4, 3, 5], 10, true);
   player.animations.add('blinkRight', [3, 0, 6, 7], 10, true);
+  playerHealth = 3;
+  playerIsTakingDamage = false;
 }
 
 function respawnPlayer(){
@@ -83,24 +86,51 @@ function respawnPlayer(){
   setupPlayer();   
 }
 
-function takingDamage(enemyGroup){
-  var overlapsEnemy = game.physics.arcade.overlap(player, enemyGroup);
-  
-  if(overlapsEnemy){
-    if(damageOverlap < 120){
-      damageOverlap++;
+function checkIfTimeElapsed(timeStart, duration){
+  var currentTime = new Date();
+  var timeDiff = timeStart - currentTime.getTime();
+  var timeElapsed = Math.abs(timeDiff / 1000);
+   
+  console.log(timeDiff, timeElapsed, duration);
+  return timeElapsed >= duration;
+}
+
+function damageBlink(){
+  if(!playerIsTakingDamage){
+    playerIsTakingDamage = true;
+    damageTime = new Date();
+    damageTime = damageTime.getTime();
+
+    if(!checkIfTimeElapsed(damageTime, 1000)){
       if(game.time.elapsed % 3 < 2){
         player.alpha = 1;
       }else{
         player.alpha = 0;
       }
     }else{
-      damageOverlap = 0;
-      respawnPlayer();
+      playerIsTakingDamage = false;
     }
   }else{
-    player.alpha = 1;
-  } 
+  }
+}
+
+function takingDamage(enemyGroup){
+  var overlapsEnemy = game.physics.arcade.overlap(player, enemyGroup);
+  
+  if(!playerIsTakingDamage){
+    if(overlapsEnemy){
+      if(playerHealth > 0){
+        damageTime = new Date();
+        damageBlink();
+      }else{
+        respawnPlayer();
+      }
+    }else{
+      player.alpha = 1;
+    }
+  }else{
+    damageBlink(); 
+  }
 }
 
 function update() {
